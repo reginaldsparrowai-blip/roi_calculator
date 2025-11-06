@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Automation ROI Calculator - Skybound AI</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Lucide React icons as SVG components
+        const Clock = ({ className }) => (
+            <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+        );
+
+        const DollarSign = ({ className }) => (
+            <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+        );
+
+        const TrendingUp = ({ className }) => (
+            <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+            </svg>
+        );
+
+        const Zap = ({ className }) => (
+            <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+        );
+
+        function AIAutomationROI() {
+            const [inputs, setInputs] = useState({
+                hoursPerWeek: 10,
+                hourlyRate: 50,
+                automationCost: 2000,
+                implementationWeeks: 4,
+                efficiencyGain: 80
+            });
+
+            const calculateEfficiencyGain = (hours, rate, cost) => {
+                if (hours === 0 || rate === 0) return 80;
+                
+                const annualLaborCost = hours * rate * 52;
+                const investmentRatio = cost / annualLaborCost;
+                
+                let efficiency;
+                
+                if (investmentRatio >= 0.5) {
+                    efficiency = Math.min(95, 85 + (investmentRatio - 0.5) * 20);
+                } else if (investmentRatio >= 0.2) {
+                    efficiency = 70 + (investmentRatio - 0.2) * 50;
+                } else if (investmentRatio >= 0.1) {
+                    efficiency = 60 + (investmentRatio - 0.1) * 100;
+                } else {
+                    efficiency = Math.max(50, 50 + investmentRatio * 100);
+                }
+                
+                return Math.round(efficiency);
+            };
+
+            const handleInputChange = (field, value) => {
+                const numValue = parseFloat(value) || 0;
+                
+                setInputs(prev => {
+                    const updated = {
+                        ...prev,
+                        [field]: numValue
+                    };
+                    
+                    if (field === 'hoursPerWeek' || field === 'hourlyRate' || field === 'automationCost') {
+                        updated.efficiencyGain = calculateEfficiencyGain(
+                            field === 'hoursPerWeek' ? numValue : prev.hoursPerWeek,
+                            field === 'hourlyRate' ? numValue : prev.hourlyRate,
+                            field === 'automationCost' ? numValue : prev.automationCost
+                        );
+                    }
+                    
+                    return updated;
+                });
+            };
+
+            const weeklyTimeSaved = (inputs.hoursPerWeek * inputs.efficiencyGain) / 100;
+            const monthlyTimeSaved = weeklyTimeSaved * 4.33;
+            const yearlyTimeSaved = weeklyTimeSaved * 52;
+            
+            const weeklyValueSaved = weeklyTimeSaved * inputs.hourlyRate;
+            const monthlyValueSaved = monthlyTimeSaved * inputs.hourlyRate;
+            const yearlyValueSaved = yearlyTimeSaved * inputs.hourlyRate;
+            
+            const breakEvenWeeks = inputs.automationCost / weeklyValueSaved;
+            const breakEvenMonths = breakEvenWeeks / 4.33;
+            
+            const firstYearROI = ((yearlyValueSaved - inputs.automationCost) / inputs.automationCost) * 100;
+            const threeYearValue = (yearlyValueSaved * 3) - inputs.automationCost;
+            const threeYearROI = (threeYearValue / inputs.automationCost) * 100;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 sm:p-8">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center mb-8">
+                            <div className="flex items-center justify-center gap-3 mb-4">
+                                <div className="bg-cyan-500 p-3 rounded-xl">
+                                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                                        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                                        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                                    </svg>
+                                </div>
+                                <h1 className="text-3xl sm:text-4xl font-bold text-white">AI Automation ROI Calculator</h1>
+                            </div>
+                            <p className="text-lg text-gray-300">Discover how much time and money you can save with Skybound AI</p>
+                        </div>
+
+                        <div className="grid lg:grid-cols-2 gap-6">
+                            <div className="space-y-6">
+                                <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-6">
+                                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                                        <Zap className="w-6 h-6 text-cyan-400" />
+                                        Your Current Situation
+                                    </h2>
+                                    
+                                    <div className="space-y-6">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                                Hours Spent on Manual Tasks (per week)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={inputs.hoursPerWeek}
+                                                onChange={(e) => handleInputChange('hoursPerWeek', e.target.value)}
+                                                className="w-full px-4 py-3 bg-slate-900 border-2 border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-lg text-white"
+                                                min="0"
+                                                step="0.5"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                                Hourly Rate ($)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={inputs.hourlyRate}
+                                                onChange={(e) => handleInputChange('hourlyRate', e.target.value)}
+                                                className="w-full px-4 py-3 bg-slate-900 border-2 border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-lg text-white"
+                                                min="0"
+                                                step="5"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                                Automation Investment ($)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={inputs.automationCost}
+                                                onChange={(e) => handleInputChange('automationCost', e.target.value)}
+                                                className="w-full px-4 py-3 bg-slate-900 border-2 border-slate-600 rounded-lg focus:border-cyan-500 focus:outline-none text-lg text-white"
+                                                min="0"
+                                                step="100"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                                Estimated Efficiency Gain
+                                            </label>
+                                            <div className="relative">
+                                                <div className="w-full h-2 bg-slate-700 rounded-lg relative overflow-hidden">
+                                                    <div 
+                                                        className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-300"
+                                                        style={{ width: `${inputs.efficiencyGain}%` }}
+                                                    ></div>
+                                                </div>
+                                                <div className="flex justify-between mt-2">
+                                                    <span className="text-sm text-gray-400">Auto-calculated</span>
+                                                    <span className="text-lg font-bold text-cyan-400">{inputs.efficiencyGain}%</span>
+                                                    <span className="text-sm text-gray-400">based on investment</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-xl shadow-2xl p-5 text-white border border-cyan-500">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Clock className="w-5 h-5" />
+                                            <h3 className="text-lg font-semibold">Time Saved</h3>
+                                        </div>
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <div className="text-3xl font-bold">{weeklyTimeSaved.toFixed(1)} hrs</div>
+                                                <div className="text-cyan-100 text-sm">per week</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-lg font-semibold">{monthlyTimeSaved.toFixed(0)} hrs/mo</div>
+                                                <div className="text-lg font-semibold">{yearlyTimeSaved.toFixed(0)} hrs/yr</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl shadow-2xl p-5 text-white border border-emerald-500">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <DollarSign className="w-5 h-5" />
+                                            <h3 className="text-lg font-semibold">Value Saved</h3>
+                                        </div>
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <div className="text-3xl font-bold">${weeklyValueSaved.toFixed(0)}</div>
+                                                <div className="text-emerald-100 text-sm">per week</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-lg font-semibold">${monthlyValueSaved.toFixed(0)}/mo</div>
+                                                <div className="text-lg font-semibold">${yearlyValueSaved.toFixed(0)}/yr</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-2xl p-5 text-white border border-blue-500">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <TrendingUp className="w-5 h-5" />
+                                            <h3 className="text-lg font-semibold">Break-Even Point</h3>
+                                        </div>
+                                        <div className="flex justify-between items-end">
+                                            <div>
+                                                <div className="text-3xl font-bold">{breakEvenMonths.toFixed(1)}</div>
+                                                <div className="text-blue-100 text-sm">months</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-lg font-semibold">{breakEvenWeeks.toFixed(0)} weeks</div>
+                                                <div className="text-sm text-blue-100">to recoup investment</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-6">
+                                    <h2 className="text-2xl font-bold text-white mb-6">Return on Investment</h2>
+                                    
+                                    <div className="space-y-6">
+                                        <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-cyan-500 rounded-xl p-6">
+                                            <h3 className="text-lg font-semibold text-white mb-4">First Year ROI</h3>
+                                            <div className="text-5xl font-bold text-cyan-400 mb-2">
+                                                {firstYearROI.toFixed(0)}%
+                                            </div>
+                                            <div className="text-gray-300">
+                                                Net savings: <span className="font-semibold text-white">
+                                                    ${(yearlyValueSaved - inputs.automationCost).toFixed(0)}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-slate-700 to-slate-800 border border-emerald-500 rounded-xl p-6">
+                                            <h3 className="text-lg font-semibold text-white mb-4">3-Year ROI</h3>
+                                            <div className="text-5xl font-bold text-emerald-400 mb-2">
+                                                {threeYearROI.toFixed(0)}%
+                                            </div>
+                                            <div className="text-gray-300">
+                                                Net savings: <span className="font-semibold text-white">
+                                                    ${threeYearValue.toFixed(0)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-6">
+                                    <h3 className="text-xl font-semibold text-white mb-4">Key Insights</h3>
+                                    <div className="space-y-4 text-gray-300">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                                            <div>
+                                                You'll save <span className="font-semibold text-white">{(yearlyTimeSaved / 40).toFixed(0)} work weeks</span> per year
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                                            <div>
+                                                That's <span className="font-semibold text-white">{((yearlyTimeSaved / 2080) * 100).toFixed(1)}%</span> of a full-time employee
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                                            <div>
+                                                Your investment pays for itself in under <span className="font-semibold text-white">{Math.ceil(breakEvenMonths)} months</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                                            <div>
+                                                5-year projected savings: <span className="font-semibold text-white">${((yearlyValueSaved * 5) - inputs.automationCost).toFixed(0)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<AIAutomationROI />, document.getElementById('root'));
+    </script>
+</body>
+</html>
